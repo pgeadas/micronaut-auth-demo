@@ -1,16 +1,9 @@
-.terraform
-*.tfstate*
 Thumbs.db
 .DS_Store
 .gradle
-.nextflow*
-.run
-.db/
-work/
 build/
 target/
 out/
-mysql-data/
 **/bin/
 .idea
 *.iml
@@ -21,10 +14,5 @@ mysql-data/
 .settings
 .classpath
 **/build-info.properties
-elb-logs/*
-cloud-deployment
-.vscode/*
-.env
-dev.env
 .cache/
 .public/

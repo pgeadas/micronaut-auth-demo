@@ -1,9 +1,7 @@
 plugins {
-    id("groovy") 
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.2.1"
-    id("com.diffplug.spotless") version "6.23.3"
-    id("io.micronaut.aot") version "4.2.1"
+    id("groovy")
+    id 'application'
+    id "java-test-fixtures"
 }
 
 version = "0.1"
@@ -13,64 +11,46 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    // for dependencies that are needed for development only
+    developmentOnly
+}
+
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
-    compileOnly("io.micronaut.data:micronaut-data-processor")
-    implementation("io.micrometer:context-propagation")
-    implementation("io.micronaut:micronaut-jackson-databind")
-    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation platform("io.micronaut.platform:micronaut-platform:$micronautVersion")
+    implementation "io.micronaut:micronaut-inject-groovy"
     implementation("io.micronaut.groovy:micronaut-runtime-groovy")
-    implementation("io.micronaut.reactor:micronaut-reactor")
-    implementation("io.micronaut.security:micronaut-security-jwt")
-    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
-    implementation("io.micronaut.validation:micronaut-validation")
-    implementation("jakarta.validation:jakarta.validation-api")
-    compileOnly("io.micronaut:micronaut-http-client")
+
+    implementation 'io.micronaut:micronaut-jackson-databind'
+    compileOnly 'io.micronaut.validation:micronaut-validation-processor'
+    implementation 'io.micronaut.validation:micronaut-validation'
+    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
+
+    compileOnly("io.micronaut.data:micronaut-data-processor")
     compileOnly("io.micronaut:micronaut-http-validation")
-    compileOnly("io.micronaut.security:micronaut-security-annotations")
-    compileOnly("io.micronaut.validation:micronaut-validation-processor")
+    compileOnly("io.micronaut:micronaut-http-client")
+    implementation "io.micronaut:micronaut-http-server-netty"
+
+    compileOnly "io.micronaut.security:micronaut-security-annotations"
+    implementation "io.micronaut.security:micronaut-security"
+    implementation "io.micronaut.security:micronaut-security-jwt"
+
+    implementation("io.micrometer:context-propagation")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.h2database:h2")
     testImplementation("io.micronaut:micronaut-http-client")
-    aotPlugins platform("io.micronaut.platform:micronaut-platform:4.2.4")
-    aotPlugins("io.micronaut.security:micronaut-security-aot")
+    testImplementation "io.micronaut.test:micronaut-test-spock"
 }
 
-
-application {
-    mainClass.set("example.micronaut.Application")
-}
 java {
     sourceCompatibility = JavaVersion.toVersion("17")
     targetCompatibility = JavaVersion.toVersion("17")
 }
-
-
-graalvmNative.toolchainDetection = false
-micronaut {
-    runtime("netty")
-    testRuntime("spock2")
-    processing {
-        incremental(true)
-        annotations("example.micronaut.*")
-    }
-    aot {
-    // Please review carefully the optimizations enabled below
-    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
-        optimizeServiceLoading = false
-        convertYamlToJava = false
-        precomputeOperations = true
-        cacheEnvironment = true
-        optimizeClassLoading = true
-        deduceEnvironment = true
-        optimizeNetty = true
-        configurationProperties.put("micronaut.security.jwks.enabled","false")
-    }
-}
-
-
-spotless {
-    groovy {
-        licenseHeaderFile(file("LICENSEHEADER"))
-    }
-}
-
